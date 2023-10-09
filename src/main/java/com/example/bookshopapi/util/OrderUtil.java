@@ -1,0 +1,79 @@
+package com.example.bookshopapi.util;
+
+import com.example.bookshopapi.dto.objectdto.orderdto.BookOrderDetailDto;
+import com.example.bookshopapi.dto.objectdto.orderdto.OrderDto;
+import com.example.bookshopapi.dto.response.order.OrderDetailResponse;
+import com.example.bookshopapi.entity.Book;
+import com.example.bookshopapi.entity.Order;
+import com.example.bookshopapi.entity.OrderDetail;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+public class OrderUtil {
+    public List<OrderDto> addToOrderDto(List<Order> orders, int customerId, List<OrderDetail> orderDetails) {
+        List<OrderDto> orderDtos = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setOrder_id(order.getId());
+            orderDto.setMerchandise_subtotal(order.getTotalAmount() + "");
+            int totalQuantity = 0;
+            for (OrderDetail orderDetail : orderDetails) {
+                if (order.getId() == orderDetail.getOrder().getId()) {
+                    totalQuantity++;
+                }
+            }
+            orderDto.setTotal_quantity(totalQuantity + "");
+            orderDto.setCreated_on(order.getCreateOn());
+            orderDto.setCustomer_id(customerId);
+            orderDto.setAddress(order.getAddress());
+            orderDto.setReceiver_name(order.getReceiverName());
+            orderDto.setReceiver_phone(order.getReceiverPhone());
+            orderDto.setShipping_id(order.getShipping().getId());
+            orderDto.setShipping_type(order.getShipping().getShippingType());
+            orderDto.setShipping_cost(order.getShipping().getShippingCost() + "");
+            orderDto.setOrder_status(order.getOrderStatus().getStatus());
+            orderDto.setOrder_total(order.getTotalAmount().multiply(order.getShipping().getShippingCost()) + "");
+            orderDtos.add(orderDto);
+        }
+        return orderDtos;
+    }
+
+    public OrderDetailResponse addToOrderDetail(Order order, List<OrderDetail> orderDetails, int customerId, List<Book> books) {
+        OrderDetailResponse response = new OrderDetailResponse();
+        response.setOrder_id(order.getId());
+        response.setMerchandise_subtotal(order.getTotalAmount() + "");
+        response.setCreated_on(order.getCreateOn());
+        response.setCustomer_id(customerId);
+        response.setAddress(order.getAddress());
+        response.setReceiver_name(order.getReceiverName());
+        response.setReceiver_phone(order.getReceiverPhone());
+        response.setShipping_id(order.getShipping().getId());
+        response.setShipping_type(order.getShipping().getShippingType());
+        response.setShipping_cost(order.getShipping().getShippingCost() + "");
+        response.setOrder_status(order.getOrderStatus().getStatus());
+        response.setOrder_total(order.getTotalAmount().add(order.getShipping().getShippingCost()) + "");
+        List<BookOrderDetailDto> bookOrderDetailDtos = new ArrayList<>();
+        for (OrderDetail orderDetail : orderDetails) {
+            BookOrderDetailDto bookOrderDetailDto = new BookOrderDetailDto();
+            bookOrderDetailDto.setOrder_id(order.getId());
+            bookOrderDetailDto.setProduct_id(orderDetail.getBook().getId());
+            bookOrderDetailDto.setProduct_name(orderDetail.getBookName());
+            bookOrderDetailDto.setImage(orderDetail.getBook().getImage());
+            bookOrderDetailDto.setQuantity(orderDetail.getQuantity());
+            bookOrderDetailDto.setUnit_cost(orderDetail.getUniCost() + "");
+            bookOrderDetailDto.setSubtotal(orderDetail.getUniCost().multiply(new BigDecimal(orderDetail.getQuantity())) + "");
+            int wishList = 0;
+            for (Book book : books) {
+                if (orderDetail.getBook().getId() == book.getId()) {
+                    wishList = 1;
+                }
+            }
+            bookOrderDetailDto.setWishlist(wishList);
+            bookOrderDetailDtos.add(bookOrderDetailDto);
+        }
+        response.setProducts(bookOrderDetailDtos);
+        return response;
+    }
+}

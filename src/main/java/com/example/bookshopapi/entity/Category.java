@@ -1,0 +1,27 @@
+package com.example.bookshopapi.entity;
+
+import lombok.*;
+
+import javax.persistence.*;
+
+import java.util.List;
+
+@Entity
+@Table(name = "category")
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class Category {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+    @Column(name = "name", columnDefinition = "VARCHAR(100)")
+    private String name;
+    @Column(name = "description")
+    private String description;
+//    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+//    private List<Book> books;
+}

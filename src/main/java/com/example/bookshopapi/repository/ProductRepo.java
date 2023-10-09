@@ -1,0 +1,57 @@
+package com.example.bookshopapi.repository;
+
+import com.example.bookshopapi.entity.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface ProductRepo extends JpaRepository<Book, Integer> {
+    @Query(value = "SELECT * FROM bookshopapi.book WHERE LENGTH(description) >= :descriptionLength LIMIT :limit OFFSET :offset", nativeQuery = true)
+    List<Book> getProducts(@Param("descriptionLength") int descriptionLength,
+                           @Param("limit") int limit,
+                           @Param("offset") int offset);
+    Book findById(int bookId);
+    List<Book> findTop20ByOrderByIdDesc();
+
+    List<Book> findTop20ByOrderByQuantityAsc();
+
+    List<Book> findTop5ByBannerIsNotNullOrderByIdDesc();
+
+    @Query("SELECT p FROM Book p WHERE p.category.id = :categoryId AND LENGTH(p.description) >= :descriptionLength")
+    Page<Book> findByCategoryIdAndDescriptionLengthGreaterThanEqual(
+            int categoryId, int descriptionLength, Pageable pageable);
+
+    @Query("SELECT b FROM Book b WHERE b.supplier.id= :supplierId AND LENGTH(b.description)>= :descriptionLength")
+    Page<Book> findBySupplierIdAndDescriptionLengthGreaterThanEqual(
+            int supplierId, int descriptionLength, Pageable pageable);
+
+    @Query("SELECT b FROM Book b WHERE b.author.id= :authorId AND LENGTH(b.description)>= :descriptionLength")
+    Page<Book> findByAuthorIdAndDescriptionLengthGreaterThanEqual(
+            int authorId, int descriptionLength, Pageable pageable);
+
+    @Query("SELECT b from Book  b where length(b.description)>= :descriptionLength and b.name like %:query% ORDER BY b.id DESC")
+    Page<Book> findByProductNews(int descriptionLength, String query, Pageable pageable);
+
+    @Query("SELECT b from Book b where length(b.description)>= :descriptionLength and b.name like %:query% ORDER BY b.quantitySold DESC")
+    Page<Book> findByProductSelling(int descriptionLength, String query, Pageable pageable);
+
+    @Query("SELECT b from Book b where length(b.description)>= :descriptionLength and b.name like %:query% ORDER BY b.discounted_price ASC ")
+    Page<Book> findByProductPriceSortAsc(int descriptionLength, String query, Pageable pageable);
+
+    @Query("SELECT b from Book b where length(b.description)>= :descriptionLength and b.name like %:query% ORDER BY b.discounted_price DESC ")
+    Page<Book> findByProductPriceSortDesc(int descriptionLength, String query, Pageable pageable);
+
+    @Query("SELECT b from Book b where b.category.id= :categoryId and length(b.description)>= :descriptionLength and b.name like %:query%")
+    Page<Book> searchProductByCategory(int descriptionLength, String query, int categoryId, Pageable pageable);
+
+    @Query("SELECT b from Book b where length(b.description)>= :descriptionLength and b.name like %:query% and b.supplier.id= :supplierId")
+    Page<Book> searchProductBySupplier(int descriptionLength, String query, int supplierId, Pageable pageable);
+
+    @Query("SELECT b from Book b where length(b.description)>= :descriptionLength and b.name like %:query% and b.author.id= :authorId")
+    Page<Book> searchProductByAuthor(int descriptionLength, String query, int authorId, Pageable pageable);
+
+}

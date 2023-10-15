@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,10 +49,10 @@ public class ProductController {
     public ResponseEntity<?> getAll(@RequestParam("page") int page,
                                     @RequestParam("limit") int limit,
                                     @RequestParam("description_length") int descriptionLength) {
-
-        List<Book> products = productService.getProducts(page, limit, descriptionLength);
-        List<BookDto> bookDtos = new BookUtil().addBook(products);
-        BookResponse response = new BookResponse(products.size(), bookDtos);
+        Page<Book> books=productService.getProducts(page,limit,descriptionLength);
+//        List<Book> bookAll = productService.getProducts(page, limit, descriptionLength);
+        List<BookDto> bookDtos = new BookUtil().addBook(books.getContent());
+        BookResponse response = new BookResponse(bookDtos.size(), bookDtos);
         return ResponseEntity.ok(response);
     }
 

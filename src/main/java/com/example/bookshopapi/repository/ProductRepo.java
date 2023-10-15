@@ -10,11 +10,16 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductRepo extends JpaRepository<Book, Integer> {
-    @Query(value = "SELECT * FROM bookshopapi.book WHERE LENGTH(description) >= :descriptionLength LIMIT :limit OFFSET :offset", nativeQuery = true)
-    List<Book> getProducts(@Param("descriptionLength") int descriptionLength,
-                           @Param("limit") int limit,
-                           @Param("offset") int offset);
+    //    @Query(value = "SELECT * FROM bookshopapi.book WHERE LENGTH(description) >= :descriptionLength LIMIT :limit OFFSET :offset", nativeQuery = true)
+//    List<Book> getProducts(@Param("descriptionLength") int descriptionLength,
+//                           @Param("limit") int limit,
+//                           @Param("offset") int offset);
+    @Query("SELECT p FROM Book p WHERE LENGTH(p.description) >= :descriptionLength")
+    Page<Book> getProducts(
+            int descriptionLength, Pageable pageable);
+
     Book findById(int bookId);
+
     List<Book> findTop20ByOrderByIdDesc();
 
     List<Book> findTop20ByOrderByQuantityAsc();

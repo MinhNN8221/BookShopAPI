@@ -15,14 +15,19 @@ public class ProductService {
     @Autowired
     private ProductRepo productRepo;
 
-    public List<Book> getProducts(int page, int limit, int descriptionLength) {
-        int offset = 10 * (page - 1);
-        return productRepo.getProducts(descriptionLength, limit, offset);
+    //    public List<Book> getProducts(int page, int limit, int descriptionLength) {
+//        int offset = 10 * (page - 1);
+//        return productRepo.getProducts(descriptionLength, limit, offset);
+//    }
+    public Page<Book> getProducts(int page, int limit, int descriptionLength) {
+        Pageable pageable=PageRequest.of(page-1, limit);
+        return productRepo.getProducts(descriptionLength, pageable);
     }
 
-    public Book findById(int id){
+    public Book findById(int id) {
         return productRepo.findById(id);
     }
+
     public List<Book> getProductsNew() {
         return productRepo.findTop20ByOrderByIdDesc();
     }

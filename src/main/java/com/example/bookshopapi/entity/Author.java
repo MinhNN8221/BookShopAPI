@@ -1,10 +1,9 @@
 package com.example.bookshopapi.entity;
 
-import com.sun.istack.internal.NotNull;
+import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "author")

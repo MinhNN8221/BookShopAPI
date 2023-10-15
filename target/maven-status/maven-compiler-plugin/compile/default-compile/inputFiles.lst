@@ -41,7 +41,7 @@ D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\service\Categor
 D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\util\CartUtil.java
 D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\entity\WishList.java
 D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\dto\response\author\AuthorInfoResponse.java
-D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\BookShopAPiApplication.java
+D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\BookShopAPIApplication.java
 D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\dto\LoginRequest.java
 D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\dto\response\order\OrderDetailResponse.java
 D:\study\DoAn\BookShop-API\src\main\java\com\example\bookshopapi\dto\objectdto\receiver\ReceiverDto.java

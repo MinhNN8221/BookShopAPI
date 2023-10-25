@@ -11,10 +11,20 @@ import java.util.List;
 public class CategoryService {
     @Autowired
     private CategoryRepo categoryRepo;
-    public List<Category> getCategoryAll(){
+
+    public List<Category> getCategoryAll() {
         return categoryRepo.findAll();
     }
-    public List<Category> getCategoryHot(){
+
+    public List<Category> getCategoryHot() {
         return categoryRepo.findTop8ByOrderByIdAsc();
+    }
+
+    public Category addCategory(Category category) {
+        return categoryRepo.save(category);
+    }
+
+    public void deleteCategory(int idCategory) {
+        categoryRepo.deleteCategoryById(idCategory);
     }
 }

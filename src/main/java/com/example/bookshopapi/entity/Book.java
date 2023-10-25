@@ -36,11 +36,11 @@ public class Book {
     private int quantity;
     @Column(name = "quantity_sold")
     private int quantitySold;
-    @Column(name = "image", columnDefinition = "VARCHAR(200)")
+    @Column(name = "image", columnDefinition = "VARCHAR(300)")
     private String image;
-    @Column(name = "image_2", columnDefinition = "VARCHAR(200)")
+    @Column(name = "image_2", columnDefinition = "VARCHAR(300)")
     private String image_2;
-    @Column(name = "thumbnail", columnDefinition = "VARCHAR(100)")
+    @Column(name = "thumbnail", columnDefinition = "VARCHAR(300)")
     private String thumbnail;
     @ManyToOne
     @JoinColumn(name = "author_id")
@@ -53,6 +53,10 @@ public class Book {
     private Category category;
     @Column(name = "banner_url")
     private String banner;
+//    @Column(name = "purchase_status")
+//    private int purchaseStatus;
+//    @Column(name = "display")
+//    private int display;
 //    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
 //    private List<OrderDetail> orderDetails;
 //    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)

@@ -20,14 +20,25 @@ public class ProductService {
 //        return productRepo.getProducts(descriptionLength, limit, offset);
 //    }
     public Page<Book> getProducts(int page, int limit, int descriptionLength) {
-        Pageable pageable=PageRequest.of(page-1, limit);
+        Pageable pageable = PageRequest.of(page - 1, limit);
         return productRepo.getProducts(descriptionLength, pageable);
+    }
+
+    public Book addBook(Book book) {
+        return productRepo.save(book);
     }
 
     public Book findById(int id) {
         return productRepo.findById(id);
     }
 
+    public Book findByName(String bookName) {
+        return productRepo.findByName(bookName);
+    }
+
+    public void deleteBook(int bookId){
+        productRepo.deleteById(bookId);
+    }
     public List<Book> getProductsNew() {
         return productRepo.findTop20ByOrderByIdDesc();
     }

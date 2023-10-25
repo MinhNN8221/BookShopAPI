@@ -31,6 +31,8 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     @Autowired
+    private OrderStatusService orderStatusService;
+    @Autowired
     private CartItemService cartItemService;
     @Autowired
     private ShippingService shippingService;
@@ -53,7 +55,7 @@ public class OrderController {
             int customerId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
             List<OrderDetail> orderDetails = orderDetailService.getAllByCustomerId(customerId);
             List<Order> orders = orderService.getAllByCustomerId(customerId);
-            List<OrderDto> orderDtos = new OrderUtil().addToOrderDto(orders, customerId, orderDetails);
+            List<OrderDto> orderDtos = new OrderUtil().addToOrderDtoByCustomer(orders, customerId, orderDetails);
             return ResponseEntity.ok(new OrderResponse(orderDtos.size(), orderDtos));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(401, "AUT_02", "Userkey không hợp lệ hoặc đã hết hạn!", "USER_KEY"));
@@ -64,6 +66,7 @@ public class OrderController {
     public ResponseEntity<?> createOrder(@RequestHeader("user-key") String userKey,
                                          @RequestParam("cart_id") String cartId,
                                          @RequestParam("shipping_id") int shippingId,
+                                         @RequestParam("payment_id") int paymentId,
                                          @RequestParam("receiver_id") int receiverId) throws MessagingException, UnsupportedEncodingException {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             int customerId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
@@ -73,10 +76,10 @@ public class OrderController {
             } else {
                 BigDecimal subTotal = new BigDecimal("0");
                 for (CartItem cartItem : cartItems) {
-                    subTotal = subTotal.add(cartItem.getBook().getDiscounted_price());
+                    subTotal = subTotal.add(cartItem.getBook().getDiscounted_price().multiply(new BigDecimal(cartItem.getQuantity())));
                 }
                 Customer customer = customerService.findById(customerId);
-                Receiver receiver=receiverService.findById(receiverId);
+                Receiver receiver = receiverService.findById(receiverId);
                 Order order = new Order();
                 order.setCreateOn(LocalDateTime.now());
                 order.setAddress(receiver.getAddress());
@@ -114,5 +117,23 @@ public class OrderController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(401, "AUT_02", "Userkey không hợp lệ hoặc đã hết hạn!", "USER_KEY"));
         }
+    }
+
+    @GetMapping("/status/{orderStatusId}")
+    public ResponseEntity<?> getAllOrderByOrderStatus(@PathVariable("orderStatusId") int orderStatusId) {
+        List<Order> orders = orderService.getOrderByOrderStatus(orderStatusId);
+        List<OrderDto> orderByStatus = new OrderUtil().addToOrderDto(orders);
+        return ResponseEntity.ok(new OrderResponse(orderByStatus.size(), orderByStatus));
+    }
+
+    @PutMapping("/status")
+    public ResponseEntity<?> updateOrderStatus(@RequestParam("orderId") int orderId,
+                                               @RequestParam("orderStatusId") int orderStatusId) {
+        Order order=orderService.getOrderById(orderId);
+        OrderStatus orderStatus=orderStatusService.findById(orderStatusId);
+        order.setOrderStatus(orderStatus);
+        orderService.save(order);
+        System.out.println("hello");
+        return ResponseEntity.ok(new Message("Đã cập nhật trạng thái đơn hàng thành công"));
     }
 }

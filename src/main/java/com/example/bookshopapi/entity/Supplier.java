@@ -20,8 +20,8 @@ public class Supplier {
     private int id;
     @Column(name = "name", columnDefinition = "VARCHAR(100)")
     private String name;
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
+//    @Column(name = "description", columnDefinition = "TEXT")
+//    private String description;
 //    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
 //    private List<Book> books;
 }

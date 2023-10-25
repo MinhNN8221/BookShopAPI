@@ -129,10 +129,10 @@ public class CustomerController {
     public ResponseEntity<?> uploadFile(@RequestHeader("user-key") String userKey,
                                         @RequestParam("image") MultipartFile multipartFile) throws IOException {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
-            String imageURL = customerService.uploadFile(multipartFile);
+            String imageURL = customerService.uploadFile(multipartFile, "customer");
             int id = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer", "")));
             Customer customer = customerService.getCustomer(id);
-            customer.setAvatar(imageURL);
+            customer.setAvatar(imageURL.replace("http", "https"));
             customerService.save(customer);
             return ResponseEntity.ok(customer);
         } else {

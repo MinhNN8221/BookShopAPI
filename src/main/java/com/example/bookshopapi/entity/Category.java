@@ -20,8 +20,8 @@ public class Category {
     private int id;
     @Column(name = "name", columnDefinition = "VARCHAR(100)")
     private String name;
-    @Column(name = "description")
-    private String description;
+//    @Column(name = "description")
+//    private String description;
 //    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 //    private List<Book> books;
 }

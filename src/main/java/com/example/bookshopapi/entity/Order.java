@@ -33,7 +33,7 @@ public class Order {
     private String receiverName;
     @Column(name = "receiver_phone", columnDefinition = "VARCHAR(10)")
     private String receiverPhone;
-//    @OneToMany(mappedBy = "order")
+    //    @OneToMany(mappedBy = "order")
 //    List<OrderDetail> orderDetails;
     @ManyToOne
     @JoinColumn(name = "customerId")
@@ -44,4 +44,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "shipping_id")
     private Shipping shipping;
+    @ManyToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 }

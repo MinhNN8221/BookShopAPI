@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderUtil {
-    public List<OrderDto> addToOrderDto(List<Order> orders, int customerId, List<OrderDetail> orderDetails) {
+    public List<OrderDto> addToOrderDtoByCustomer(List<Order> orders, int customerId, List<OrderDetail> orderDetails) {
         List<OrderDto> orderDtos = new ArrayList<>();
         for (Order order : orders) {
             OrderDto orderDto = new OrderDto();
@@ -34,7 +34,7 @@ public class OrderUtil {
             orderDto.setShipping_type(order.getShipping().getShippingType());
             orderDto.setShipping_cost(order.getShipping().getShippingCost() + "");
             orderDto.setOrder_status(order.getOrderStatus().getStatus());
-            orderDto.setOrder_total(order.getTotalAmount().multiply(order.getShipping().getShippingCost()) + "");
+            orderDto.setOrder_total(order.getTotalAmount().add(order.getShipping().getShippingCost()) + "");
             orderDtos.add(orderDto);
         }
         return orderDtos;
@@ -76,4 +76,33 @@ public class OrderUtil {
         response.setProducts(bookOrderDetailDtos);
         return response;
     }
+
+    public List<OrderDto> addToOrderDto(List<Order> orders) {
+        List<OrderDto> orderDtos = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setOrder_id(order.getId());
+            orderDto.setMerchandise_subtotal(order.getTotalAmount() + "");
+//            int totalQuantity = 0;
+//            for (OrderDetail orderDetail : orderDetails) {
+//                if (order.getId() == orderDetail.getOrder().getId()) {
+//                    totalQuantity++;
+//                }
+//            }
+//            orderDto.setTotal_quantity(totalQuantity + "");
+            orderDto.setCreated_on(order.getCreateOn());
+            orderDto.setCustomer_id(order.getCustomer().getId());
+            orderDto.setAddress(order.getAddress());
+            orderDto.setReceiver_name(order.getReceiverName());
+            orderDto.setReceiver_phone(order.getReceiverPhone());
+            orderDto.setShipping_id(order.getShipping().getId());
+            orderDto.setShipping_type(order.getShipping().getShippingType());
+            orderDto.setShipping_cost(order.getShipping().getShippingCost() + "");
+            orderDto.setOrder_status(order.getOrderStatus().getStatus());
+            orderDto.setOrder_total(order.getTotalAmount().add(order.getShipping().getShippingCost()) + "");
+            orderDtos.add(orderDto);
+        }
+        return orderDtos;
+    }
+
 }

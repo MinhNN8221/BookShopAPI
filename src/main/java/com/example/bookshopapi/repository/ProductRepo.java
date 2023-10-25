@@ -18,7 +18,13 @@ public interface ProductRepo extends JpaRepository<Book, Integer> {
     Page<Book> getProducts(
             int descriptionLength, Pageable pageable);
 
+    Book save(Book book);
+
+    void deleteById(int bookId);
+
     Book findById(int bookId);
+
+    Book findByName(String bookName);
 
     List<Book> findTop20ByOrderByIdDesc();
 

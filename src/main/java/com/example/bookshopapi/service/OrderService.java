@@ -23,4 +23,8 @@ public class OrderService {
     public Order getOrderById(int orderId){
         return orderRepo.getOrderById(orderId);
     }
+
+    public List<Order> getOrderByOrderStatus(int orderStatus){
+        return orderRepo.getAllByOrderStatusId(orderStatus);
+    }
 }

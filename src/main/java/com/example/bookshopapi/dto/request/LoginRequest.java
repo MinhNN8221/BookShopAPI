@@ -1,4 +1,4 @@
-package com.example.bookshopapi.dto;
+package com.example.bookshopapi.dto.request;
 
 import lombok.*;
 

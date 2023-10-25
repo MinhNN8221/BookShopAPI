@@ -8,4 +8,6 @@ import java.util.List;
 public interface CategoryRepo extends JpaRepository<Category, Integer> {
     List<Category> findAll();
     List<Category> findTop8ByOrderByIdAsc();
+    Category save(Category category);
+    void deleteCategoryById(int idCategory);
 }

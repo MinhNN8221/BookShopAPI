@@ -43,7 +43,7 @@ public class CustomerService implements UserDetailsService {
         return customerRepo.findById(customerId);
     }
 
-    public String uploadFile(MultipartFile multipartFile) throws IOException {
+    public String uploadFile(MultipartFile multipartFile, String folderName) throws IOException {
 //        MultilpartFile: cung cấp các phương thức để có thể truy cập dữ liệu của tệp trực tiếp
 //        thông qua InputStream và lấy thông tin về tên tệp và kiểu MIME
 //        kiểu MIME: chuỗi ký tự dùng để định danh loại nội dung của một tệp hoặc dữ liệu,
@@ -51,6 +51,7 @@ public class CustomerService implements UserDetailsService {
 //        và máy khách thông tin về loại dữ liệu đang truyền qua mạng
         Map<String, Object> uploadParams = new HashMap<>();
         uploadParams.put("public_id", UUID.randomUUID().toString());
+        uploadParams.put("folder", folderName);
 
         return cloudinary.uploader()
                 .upload(multipartFile.getBytes(), uploadParams)  //chuyển đổi tệp đa phương tiện thành mảng byte sau đó upload

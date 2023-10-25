@@ -1,6 +1,7 @@
 package com.example.bookshopapi.util;
 
 import com.example.bookshopapi.dto.objectdto.bookdto.*;
+import com.example.bookshopapi.dto.request.BookRequest;
 import com.example.bookshopapi.entity.Book;
 import com.example.bookshopapi.entity.CartItem;
 
@@ -85,17 +86,32 @@ public class BookUtil {
         bookDetailDto.setName(book.getName());
         bookDetailDto.setDescription(book.getDescription());
         bookDetailDto.setPrice(book.getPrice() + "");
-        bookDetailDto.setDiscounted_price(book.getDiscounted_price()+"");
+        bookDetailDto.setDiscounted_price(book.getDiscounted_price() + "");
         bookDetailDto.setQuantity(book.getQuantity());
         bookDetailDto.setQuantitySold(book.getQuantitySold());
         bookDetailDto.setThumbnail(book.getThumbnail());
         int wishlist = 0;
-        for (Book bookWishlist : booksInWishlist) {
-            if (book.getId() == bookWishlist.getId()) {
-                wishlist = 1;
+        if (booksInWishlist != null) {
+            for (Book bookWishlist : booksInWishlist) {
+                if (book.getId() == bookWishlist.getId()) {
+                    wishlist = 1;
+                }
             }
         }
         bookDetailDto.setWishlist(wishlist);
         return bookDetailDto;
+    }
+
+    public Book setBookFromRequest(BookRequest bookRequest) {
+        Book book = new Book();
+        book.setName(bookRequest.getName());
+        book.setDescription(bookRequest.getDescription());
+        book.setQuantity(bookRequest.getQuantity());
+        book.setPrice(bookRequest.getPrice());
+        book.setDiscounted_price(bookRequest.getDiscounted_price());
+        book.setAuthor(bookRequest.getAuthor());
+        book.setCategory(bookRequest.getCategory());
+        book.setSupplier(bookRequest.getSupplier());
+        return book;
     }
 }

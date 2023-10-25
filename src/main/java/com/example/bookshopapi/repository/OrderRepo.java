@@ -11,4 +11,6 @@ public interface OrderRepo extends JpaRepository<Order, Integer> {
     List<Order> getAllByCustomerId(int customerId);
 
     Order getOrderById(int orderId);
+
+    List<Order> getAllByOrderStatusId(int orderStatusId);
 }

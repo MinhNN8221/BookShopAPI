@@ -1,6 +1,7 @@
 package com.example.bookshopapi.controller;
 
 import com.example.bookshopapi.dto.response.Message;
+import com.example.bookshopapi.dto.objectdto.categorydto.CategoryBestSeller;
 import com.example.bookshopapi.dto.response.category.CategoryResponse;
 import com.example.bookshopapi.entity.Category;
 import com.example.bookshopapi.service.CategoryService;
@@ -40,8 +41,8 @@ public class CategoryController {
     @PostMapping("/add")
     public ResponseEntity<?> addCategory(@RequestBody Category categoryRequest) {
         List<Category> categories = categoryService.getCategoryAll();
-        List<String> categoryNames=new ArrayList<>();
-        for(Category category:categories){
+        List<String> categoryNames = new ArrayList<>();
+        for (Category category : categories) {
             categoryNames.add(category.getName());
         }
         if (categoryNames.contains(categoryRequest.getName())) {
@@ -56,5 +57,16 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@RequestParam("idCategory") int idCategory) {
         categoryService.deleteCategory(idCategory);
         return ResponseEntity.ok(new Message("Đã xóa thành công"));
+    }
+
+    @GetMapping("/bestseller")
+    public ResponseEntity<?> getCategoryBestSeller() {
+        List<Object[]> categoryBestSellers = categoryService.getCategoryBestSeller();
+        List<CategoryBestSeller> response = new ArrayList<>();
+        for (Object[] object : categoryBestSellers) {
+            Category category=(Category) object[0];
+            response.add(new CategoryBestSeller(category, (Long)object[1]));
+        }
+        return ResponseEntity.ok(response);
     }
 }

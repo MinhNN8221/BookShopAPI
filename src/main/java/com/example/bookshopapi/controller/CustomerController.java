@@ -1,6 +1,7 @@
 package com.example.bookshopapi.controller;
 
 import com.example.bookshopapi.config.jwt.JwtUtil;
+import com.example.bookshopapi.dto.response.Message;
 import com.example.bookshopapi.dto.response.customer.CustomerResponse;
 import com.example.bookshopapi.entity.Cart;
 import com.example.bookshopapi.entity.Customer;
@@ -64,9 +65,9 @@ public class CustomerController {
         return "hello world!";
     }
 
-    @GetMapping("/users")
-    public List<Customer> getAllUser() {
-        return customerService.getAll();
+    @GetMapping("/all")
+    public ResponseEntity<?> getUserNumber() {
+        return ResponseEntity.ok(new Message("Số lượng khách hàng sử dụng dịch vụ: " + customerService.getAll().size()));
     }
 
     @PostMapping("")

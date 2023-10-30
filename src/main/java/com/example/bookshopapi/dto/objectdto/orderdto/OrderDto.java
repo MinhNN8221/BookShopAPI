@@ -14,8 +14,8 @@ public class OrderDto {
     private int order_id;
     private String merchandise_subtotal;
     private String total_quantity;
-    private LocalDateTime created_on;
-    private LocalDateTime shipped_on;
+    private String created_on;
+    private String shipped_on;
     private int customer_id;
     private String address;
     private String receiver_name;

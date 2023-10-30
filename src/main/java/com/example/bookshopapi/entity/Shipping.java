@@ -1,5 +1,6 @@
 package com.example.bookshopapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ public class Shipping {
     private String shippingType;
     @Column(name = "shipping_cost", precision = 10, scale = 2)
     private BigDecimal shippingCost;
-//    @OneToMany(mappedBy = "shipping", cascade = CascadeType.ALL)
-//    private List<Order> orders;
+    @OneToMany(mappedBy = "shipping", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Order> orders;
 }

@@ -16,4 +16,5 @@ public class BookHotNewDto {
     private int quantity;
     private int quantitySold;
     private String thumbnail;
+    private String supplierName;
 }

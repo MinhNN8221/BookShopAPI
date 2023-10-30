@@ -43,10 +43,13 @@ public class Customer {
     private String gender;
     @Column(name = "avatar")
     private String avatar;
-//    @OneToMany(mappedBy = "customer")
-//    private List<Order> orders;
-//    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
-//    private WishList wishList;
-//    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
-//    private Cart cart;
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    private List<Order> orders;
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private WishList wishList;
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Cart cart;
 }

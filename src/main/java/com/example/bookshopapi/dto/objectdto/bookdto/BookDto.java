@@ -16,7 +16,6 @@ public class BookDto {
     private int quantity;
     private int quantitySold;
     private String image;
-    private String image_2;
     private String thumbnail;
     private int author_id;
     private int supplier_id;

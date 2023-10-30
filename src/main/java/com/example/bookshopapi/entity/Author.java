@@ -1,9 +1,11 @@
 package com.example.bookshopapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "author")
@@ -26,6 +28,7 @@ public class Author {
     @NotNull
     @Column(name = "avatar", columnDefinition = "VARCHAR(200)")
     private String avatar;
-//    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-//    private List<Book> books;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Book> books;
 }

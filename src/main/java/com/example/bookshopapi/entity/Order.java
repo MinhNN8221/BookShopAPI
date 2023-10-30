@@ -1,5 +1,6 @@
 package com.example.bookshopapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,17 +25,15 @@ public class Order {
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
     @Column(name = "create_on")
-    private LocalDateTime createOn;
+    private Date createOn;
     @Column(name = "shipped_on")
-    private LocalDateTime shippedOn;
+    private Date shippedOn;
     @Column(name = "address", columnDefinition = "VARCHAR(255)")
     private String address;
     @Column(name = "receiver_name", columnDefinition = "VARCHAR(100)")
     private String receiverName;
     @Column(name = "receiver_phone", columnDefinition = "VARCHAR(10)")
     private String receiverPhone;
-    //    @OneToMany(mappedBy = "order")
-//    List<OrderDetail> orderDetails;
     @ManyToOne
     @JoinColumn(name = "customerId")
     private Customer customer;
@@ -47,4 +46,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "payment_id")
     private Payment payment;
+    @OneToMany(mappedBy = "order")
+    @JsonIgnore
+    List<OrderDetail> orderDetails;
 }

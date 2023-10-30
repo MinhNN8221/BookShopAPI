@@ -227,4 +227,12 @@ public class ProductController {
         productService.deleteBook(productId);
         return ResponseEntity.ok(new Message("Đã xóa sản phẩm thành công"));
     }
+
+    @GetMapping("/bestseller")
+    public ResponseEntity<?> getBookSelling() {
+        List<Book> products = productService.getBookByQuantitySold();
+        List<BookDto> bookDtos = new BookUtil().addBook(products);
+        BookResponse response = new BookResponse(products.size(), bookDtos);
+        return ResponseEntity.ok(response);
+    }
 }

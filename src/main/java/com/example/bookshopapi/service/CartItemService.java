@@ -5,6 +5,7 @@ import com.example.bookshopapi.entity.Cart;
 import com.example.bookshopapi.entity.CartItem;
 import com.example.bookshopapi.repository.CartItemRepo;
 import com.example.bookshopapi.repository.CartRepo;
+import com.example.bookshopapi.repository.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,8 @@ import java.util.List;
 public class CartItemService {
     @Autowired
     private CartItemRepo cartItemRepo;
-
+    @Autowired
+    private ProductRepo productRepo;
     @Autowired
     private CartRepo cartRepo;
 
@@ -38,6 +40,7 @@ public class CartItemService {
     public void deleteByCartItemId(int itemCartId, int customerId) {
         cartItemRepo.deleteByIdAndCartCustomerId(itemCartId, customerId);
     }
+
     public List<Book> getAllBooksInCart(int customerId) {
         return cartItemRepo.getAllBooksInCart(customerId);
     }
@@ -49,19 +52,31 @@ public class CartItemService {
     public void addWishlistToCart(int customerId, List<Book> booksInWishlist) {
         List<Book> booksInCart = getAllBooksInCart(customerId);
         for (Book book : booksInWishlist) {
-            if (booksInCart.contains(book)) {
-                CartItem cartItem = findByBookIdAndCustomerId(book.getId(), customerId);
-                cartItem.setQuantity(cartItem.getQuantity() + 1);
-                cartItemRepo.save(cartItem);
-            } else {
-                Cart cart = cartRepo.findByCustomerId(customerId);
-                CartItem cartItem = new CartItem();
-                cartItem.setAddOn(LocalDateTime.now());
-                cartItem.setQuantity(1);
-                cartItem.setBook(book);
-                cartItem.setCart(cart);
-                cartItemRepo.save(cartItem);
+            if(book.getQuantity()-book.getQuantitySold()>0){
+                if (booksInCart.contains(book)) {
+                    CartItem cartItem = findByBookIdAndCustomerId(book.getId(), customerId);
+                    cartItem.setQuantity(cartItem.getQuantity() + 1);
+                    cartItemRepo.save(cartItem);
+                } else {
+                    Cart cart = cartRepo.findByCustomerId(customerId);
+                    CartItem cartItem = new CartItem();
+                    cartItem.setAddOn(LocalDateTime.now());
+                    cartItem.setQuantity(1);
+                    cartItem.setBook(book);
+                    cartItem.setCart(cart);
+                    cartItemRepo.save(cartItem);
+                }
+                book.setQuantitySold(book.getQuantitySold()+1);
+                productRepo.save(book);
             }
+        }
+    }
+
+    public void restoreQuantity(List<CartItem> cartItems) {
+        for (CartItem cartItem : cartItems) {
+            Book book = cartItem.getBook();
+            book.setQuantitySold(book.getQuantitySold() - cartItem.getQuantity());
+            productRepo.save(book);
         }
     }
 }

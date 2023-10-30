@@ -14,6 +14,8 @@ import java.util.List;
 public class OrderDetailService {
     @Autowired
     private OrderDetailRepo orderDetailRepo;
+    @Autowired
+    private ProductService productService;
 
     public void save(Order order, List<CartItem> cartItems) {
         for (CartItem cartItem : cartItems) {

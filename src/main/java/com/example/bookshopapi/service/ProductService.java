@@ -36,9 +36,10 @@ public class ProductService {
         return productRepo.findByName(bookName);
     }
 
-    public void deleteBook(int bookId){
+    public void deleteBook(int bookId) {
         productRepo.deleteById(bookId);
     }
+
     public List<Book> getProductsNew() {
         return productRepo.findTop20ByOrderByIdDesc();
     }
@@ -49,6 +50,10 @@ public class ProductService {
 
     public List<Book> getProductsBanner() {
         return productRepo.findTop5ByBannerIsNotNullOrderByIdDesc();
+    }
+
+    public List<Book> getBookByQuantitySold() {
+        return productRepo.findTop5ByOrderByQuantitySoldDesc();
     }
 
     public Page<Book> findProductsByCategory(

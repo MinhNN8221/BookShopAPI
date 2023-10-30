@@ -22,6 +22,7 @@ public class BookUtil {
             bookHotNew.setQuantity(book.getQuantity());
             bookHotNew.setQuantitySold(book.getQuantitySold());
             bookHotNew.setThumbnail(book.getThumbnail());
+            bookHotNew.setSupplierName(book.getSupplier().getName());
             bookHotNews.add(bookHotNew);
         }
         return bookHotNews;
@@ -31,7 +32,7 @@ public class BookUtil {
         List<BookDto> bookDtos = new ArrayList<>();
         for (Book book : books) {
             BookDto bookDto = new BookDto(book.getId(), book.getName(), book.getDescription(), book.getPrice() + "", book.getDiscounted_price() + "", book.getQuantity(), book.getQuantitySold(),
-                    book.getImage(), book.getImage_2(), book.getThumbnail(), book.getAuthor().getId(), book.getSupplier().getId(), book.getCategory().getId());
+                    book.getImage(), book.getThumbnail(), book.getAuthor().getId(), book.getSupplier().getId(), book.getCategory().getId());
             bookDtos.add(bookDto);
         }
         return bookDtos;

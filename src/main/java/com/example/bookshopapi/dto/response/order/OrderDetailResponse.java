@@ -4,6 +4,7 @@ import com.example.bookshopapi.dto.objectdto.orderdto.BookOrderDetailDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Builder
@@ -14,8 +15,8 @@ import java.util.List;
 public class OrderDetailResponse {
     private int order_id;
     private String merchandise_subtotal;
-    private LocalDateTime created_on;
-    private LocalDateTime shipped_on;
+    private String created_on;
+    private String shipped_on;
     private int customer_id;
     private String address;
     private String receiver_name;

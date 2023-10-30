@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -46,6 +49,8 @@ public class OrderController {
     private CustomerService customerService;
     @Autowired
     private OrderDetailService orderDetailService;
+    @Autowired
+    private PaymentService paymentService;
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -80,20 +85,28 @@ public class OrderController {
                 }
                 Customer customer = customerService.findById(customerId);
                 Receiver receiver = receiverService.findById(receiverId);
-                Order order = new Order();
-                order.setCreateOn(LocalDateTime.now());
-                order.setAddress(receiver.getAddress());
-                order.setReceiverName(receiver.getReceiverName());
-                order.setReceiverPhone(receiver.getReceiverPhone());
-                order.setShipping(shippingService.findById(shippingId));
-                order.setTotalAmount(subTotal);
-                order.setOrderStatus(new OrderStatus(1, "Đang được chuẩn bị"));
-                order.setCustomer(customer);
-                emailService.sendMailOrder(receiver, customer, order, cartItems);
-                orderService.save(order);
-                orderDetailService.save(order, cartItems);
-                cartItemService.emptyCart(cartId);
-                return ResponseEntity.ok(new Message("Đặt hàng thành công"));
+                if (receiver == null) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(404, "RECEIVER_02", "Không tìm thấy người nhận!", "RECEIVER"));
+                } else {
+                    Order order = new Order();
+                    OrderStatus orderStatus = new OrderStatus();
+                    orderStatus.setId(1);
+                    orderStatus.setStatus("Đang được chuẩn bị");
+                    order.setCreateOn(new Date());
+                    order.setAddress(receiver.getAddress());
+                    order.setReceiverName(receiver.getReceiverName());
+                    order.setReceiverPhone(receiver.getReceiverPhone());
+                    order.setShipping(shippingService.findById(shippingId));
+                    order.setTotalAmount(subTotal);
+                    order.setOrderStatus(orderStatus);
+                    order.setCustomer(customer);
+                    order.setPayment(paymentService.getPaymentById(paymentId));
+                    emailService.sendMailOrder(receiver, customer, order, cartItems);
+                    orderService.save(order);
+                    orderDetailService.save(order, cartItems);
+                    cartItemService.emptyCart(cartId);
+                    return ResponseEntity.ok(new Message("Đặt hàng thành công"));
+                }
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(401, "AUT_02", "Userkey không hợp lệ hoặc đã hết hạn!", "USER_KEY"));
@@ -101,8 +114,8 @@ public class OrderController {
     }
 
     @GetMapping("/{order_id}")
-    public ResponseEntity<?> getOrderInfo(@RequestHeader("user-key") String userKey,
-                                          @PathVariable("order_id") int orderId) {
+    public ResponseEntity<?> getOrderInfoByCustomer(@RequestHeader("user-key") String userKey,
+                                                    @PathVariable("order_id") int orderId) {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             int customerId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
             List<OrderDetail> orderDetails = orderDetailService.getAllByOrderId(orderId);
@@ -119,21 +132,60 @@ public class OrderController {
         }
     }
 
+
     @GetMapping("/status/{orderStatusId}")
     public ResponseEntity<?> getAllOrderByOrderStatus(@PathVariable("orderStatusId") int orderStatusId) {
-        List<Order> orders = orderService.getOrderByOrderStatus(orderStatusId);
-        List<OrderDto> orderByStatus = new OrderUtil().addToOrderDto(orders);
-        return ResponseEntity.ok(new OrderResponse(orderByStatus.size(), orderByStatus));
+        List<OrderDto> orders = orderService.getOrderByOrderStatus(orderStatusId);
+//        List<OrderDto> orderByStatus = new OrderUtil().addToOrderDto(orders);
+        return ResponseEntity.ok(new OrderResponse(orders.size(), orders));
+    }
+
+    @GetMapping("/detail/{order_id}")
+    public ResponseEntity<?> getOrderDetail(@PathVariable("order_id") int orderId) {
+        List<OrderDetail> orderDetails = orderDetailService.getAllByOrderId(orderId);
+        Order order = orderService.getOrderById(orderId);
+//        List<Book> books = wishListItemService.getAllBooksInWishlist(customerId);
+        OrderDetailResponse response = new OrderUtil().addToOrderDetail(order, orderDetails, 0, null);
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/status")
     public ResponseEntity<?> updateOrderStatus(@RequestParam("orderId") int orderId,
                                                @RequestParam("orderStatusId") int orderStatusId) {
-        Order order=orderService.getOrderById(orderId);
-        OrderStatus orderStatus=orderStatusService.findById(orderStatusId);
+        Order order = orderService.getOrderById(orderId);
+        OrderStatus orderStatus = orderStatusService.findById(orderStatusId);
         order.setOrderStatus(orderStatus);
+        order.setShippedOn(new Date());
         orderService.save(order);
-        System.out.println("hello");
         return ResponseEntity.ok(new Message("Đã cập nhật trạng thái đơn hàng thành công"));
+    }
+
+    @GetMapping("/year/{year}")
+    public ResponseEntity<?> getAllOrderByYear(@PathVariable("year") int year) throws ParseException {
+        SimpleDateFormat smf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        Date start = smf.parse("01/01/" + year + " 00:00:00");
+        Date end = smf.parse("31/12/" + year + " 23:59:59");
+        List<OrderDto> orders = orderService.getOrderByTime(start, end);
+        return ResponseEntity.ok(new OrderResponse(orders.size(), orders));
+    }
+
+    @GetMapping("/monthOfYear")
+    public ResponseEntity<?> getAllOrderByMonthOfYear(@RequestParam("year") int year,
+                                                      @RequestParam("month") int month) throws ParseException {
+        SimpleDateFormat smf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        Date start = smf.parse("01/" + month + "/" + year + " 00:00:00");
+        Date end = smf.parse("31/" + month + "/" + year + " 23:59:59");
+        List<OrderDto> orders = orderService.getOrderByTime(start, end);
+        return ResponseEntity.ok(new OrderResponse(orders.size(), orders));
+    }
+
+    @GetMapping("/today")
+    public ResponseEntity<?> getAllOrderByToday(@RequestParam("today") String today) throws ParseException {
+        SimpleDateFormat smf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        Date start = smf.parse(today + " 00:00:00");
+        Date end = smf.parse(today + " 23:59:59");
+        List<OrderDto> orders = orderService.getOrderByTime(start, end);
+        return ResponseEntity.ok(new OrderResponse(orders.size(), orders));
     }
 }

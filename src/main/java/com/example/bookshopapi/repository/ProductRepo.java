@@ -20,7 +20,7 @@ public interface ProductRepo extends JpaRepository<Book, Integer> {
 
     Book save(Book book);
 
-    void deleteById(int bookId);
+//    void deleteById(int bookId);
 
     Book findById(int bookId);
 
@@ -31,6 +31,8 @@ public interface ProductRepo extends JpaRepository<Book, Integer> {
     List<Book> findTop20ByOrderByQuantityAsc();
 
     List<Book> findTop5ByBannerIsNotNullOrderByIdDesc();
+
+    List<Book> findTop5ByOrderByQuantitySoldDesc();
 
     @Query("SELECT p FROM Book p WHERE p.category.id = :categoryId AND LENGTH(p.description) >= :descriptionLength")
     Page<Book> findByCategoryIdAndDescriptionLengthGreaterThanEqual(

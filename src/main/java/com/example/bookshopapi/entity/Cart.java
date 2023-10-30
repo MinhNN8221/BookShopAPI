@@ -1,5 +1,6 @@
 package com.example.bookshopapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,9 +18,10 @@ public class Cart {
     @Id
     @Column(name = "id")
     private String id;
-//    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-//    private List<CartItem> cartItems;
     @OneToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<CartItem> cartItems;
 }

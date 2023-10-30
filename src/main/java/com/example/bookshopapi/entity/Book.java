@@ -1,5 +1,6 @@
 package com.example.bookshopapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.*;
 
@@ -38,8 +39,6 @@ public class Book {
     private int quantitySold;
     @Column(name = "image", columnDefinition = "VARCHAR(300)")
     private String image;
-    @Column(name = "image_2", columnDefinition = "VARCHAR(300)")
-    private String image_2;
     @Column(name = "thumbnail", columnDefinition = "VARCHAR(300)")
     private String thumbnail;
     @ManyToOne
@@ -53,12 +52,19 @@ public class Book {
     private Category category;
     @Column(name = "banner_url")
     private String banner;
+
+//    List<CartItem> cartItems;
 //    @Column(name = "purchase_status")
 //    private int purchaseStatus;
 //    @Column(name = "display")
 //    private int display;
-//    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-//    private List<OrderDetail> orderDetails;
-//    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-//    private List<CartItem> cartItems;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<OrderDetail> orderDetails;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<CartItem> cartItems;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Wishlistitem> wishlistitems;
 }

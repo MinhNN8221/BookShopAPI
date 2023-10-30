@@ -3,6 +3,8 @@ package com.example.bookshopapi.service;
 import com.example.bookshopapi.entity.Category;
 import com.example.bookshopapi.repository.CategoryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,5 +28,10 @@ public class CategoryService {
 
     public void deleteCategory(int idCategory) {
         categoryRepo.deleteCategoryById(idCategory);
+    }
+
+    public List<Object[]> getCategoryBestSeller(){
+        Pageable pageable = PageRequest.of(0, 3);
+        return categoryRepo.findTop3CategoryByQuantitySold(pageable);
     }
 }

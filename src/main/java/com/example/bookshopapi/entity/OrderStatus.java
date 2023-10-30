@@ -1,5 +1,6 @@
 package com.example.bookshopapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ public class OrderStatus {
     private int id;
     @Column(name = "status", columnDefinition = "VARCHAR(100)")
     private String status;
-//    @OneToMany(mappedBy = "orderStatus", cascade = CascadeType.ALL)
-//    private List<Order> orders;
+    @OneToMany(mappedBy = "orderStatus", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Order> orders;
 }

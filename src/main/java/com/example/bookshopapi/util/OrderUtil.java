@@ -25,7 +25,8 @@ public class OrderUtil {
                 }
             }
             orderDto.setTotal_quantity(totalQuantity + "");
-            orderDto.setCreated_on(order.getCreateOn());
+            orderDto.setCreated_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getCreateOn()));
+            orderDto.setShipped_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getShippedOn()));
             orderDto.setCustomer_id(customerId);
             orderDto.setAddress(order.getAddress());
             orderDto.setReceiver_name(order.getReceiverName());
@@ -44,8 +45,9 @@ public class OrderUtil {
         OrderDetailResponse response = new OrderDetailResponse();
         response.setOrder_id(order.getId());
         response.setMerchandise_subtotal(order.getTotalAmount() + "");
-        response.setCreated_on(order.getCreateOn());
+        response.setCreated_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getCreateOn()));
         response.setCustomer_id(customerId);
+        response.setShipped_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getShippedOn()));
         response.setAddress(order.getAddress());
         response.setReceiver_name(order.getReceiverName());
         response.setReceiver_phone(order.getReceiverPhone());
@@ -65,44 +67,17 @@ public class OrderUtil {
             bookOrderDetailDto.setUnit_cost(orderDetail.getUniCost() + "");
             bookOrderDetailDto.setSubtotal(orderDetail.getUniCost().multiply(new BigDecimal(orderDetail.getQuantity())) + "");
             int wishList = 0;
-            for (Book book : books) {
-                if (orderDetail.getBook().getId() == book.getId()) {
-                    wishList = 1;
+            if(books!=null){
+                for (Book book : books) {
+                    if (orderDetail.getBook().getId() == book.getId()) {
+                        wishList = 1;
+                    }
                 }
+                bookOrderDetailDto.setWishlist(wishList);
             }
-            bookOrderDetailDto.setWishlist(wishList);
             bookOrderDetailDtos.add(bookOrderDetailDto);
         }
         response.setProducts(bookOrderDetailDtos);
         return response;
     }
-
-    public List<OrderDto> addToOrderDto(List<Order> orders) {
-        List<OrderDto> orderDtos = new ArrayList<>();
-        for (Order order : orders) {
-            OrderDto orderDto = new OrderDto();
-            orderDto.setOrder_id(order.getId());
-            orderDto.setMerchandise_subtotal(order.getTotalAmount() + "");
-//            int totalQuantity = 0;
-//            for (OrderDetail orderDetail : orderDetails) {
-//                if (order.getId() == orderDetail.getOrder().getId()) {
-//                    totalQuantity++;
-//                }
-//            }
-//            orderDto.setTotal_quantity(totalQuantity + "");
-            orderDto.setCreated_on(order.getCreateOn());
-            orderDto.setCustomer_id(order.getCustomer().getId());
-            orderDto.setAddress(order.getAddress());
-            orderDto.setReceiver_name(order.getReceiverName());
-            orderDto.setReceiver_phone(order.getReceiverPhone());
-            orderDto.setShipping_id(order.getShipping().getId());
-            orderDto.setShipping_type(order.getShipping().getShippingType());
-            orderDto.setShipping_cost(order.getShipping().getShippingCost() + "");
-            orderDto.setOrder_status(order.getOrderStatus().getStatus());
-            orderDto.setOrder_total(order.getTotalAmount().add(order.getShipping().getShippingCost()) + "");
-            orderDtos.add(orderDto);
-        }
-        return orderDtos;
-    }
-
 }

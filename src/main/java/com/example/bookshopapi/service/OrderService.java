@@ -5,10 +5,8 @@ import com.example.bookshopapi.entity.Order;
 import com.example.bookshopapi.repository.OrderDetailRepo;
 import com.example.bookshopapi.repository.OrderRepo;
 import com.example.bookshopapi.util.ConvetDateTimeUTC;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;

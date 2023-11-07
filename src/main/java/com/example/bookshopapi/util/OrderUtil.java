@@ -62,6 +62,7 @@ public class OrderUtil {
             bookOrderDetailDto.setOrder_id(order.getId());
             bookOrderDetailDto.setProduct_id(orderDetail.getBook().getId());
             bookOrderDetailDto.setProduct_name(orderDetail.getBookName());
+            bookOrderDetailDto.setProduct_description(orderDetail.getBook().getDescription());
             bookOrderDetailDto.setImage(orderDetail.getBook().getImage());
             bookOrderDetailDto.setQuantity(orderDetail.getQuantity());
             bookOrderDetailDto.setUnit_cost(orderDetail.getUniCost() + "");

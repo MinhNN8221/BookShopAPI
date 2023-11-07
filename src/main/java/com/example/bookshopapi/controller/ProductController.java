@@ -78,11 +78,12 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/recommend")
+    @GetMapping("/banner")
     public ResponseEntity<?> getProductsRecomend() {
         List<Book> products = productService.getProductsBanner();
         List<BookBannerDto> bookBannerDtos = new BookUtil().addBookBanner(products);
         BookBannerResponse response = new BookBannerResponse(bookBannerDtos.size(), bookBannerDtos);
+//        System.out.println(response.getProducts().get(0).getBanner_url());
         return ResponseEntity.ok(response);
     }
 

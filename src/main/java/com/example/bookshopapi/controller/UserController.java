@@ -35,7 +35,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -44,7 +43,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Slf4j
 @ControllerAdvice
-public class CustomerController {
+public class UserController {
     @Autowired
     private CustomerService customerService;
     @Autowired
@@ -87,6 +86,7 @@ public class CustomerController {
             customer.setName(name);
             customer.setPassword(bCryptPasswordEncoder.encode(password));
             customer.setAvatar("");
+            customer.setRole("user");
             String accessToken = jwtUtil.generateToken(customer);
             customerService.save(customer);
             wishList.setCustomer(customer);

@@ -7,11 +7,10 @@ import lombok.*;
 import javax.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "user")
 @Builder
 @Getter
 @Setter
@@ -43,6 +42,8 @@ public class Customer {
     private String gender;
     @Column(name = "avatar")
     private String avatar;
+    @Column(name = "role")
+    private String role;
     @OneToMany(mappedBy = "customer")
     @JsonIgnore
     private List<Order> orders;

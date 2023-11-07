@@ -65,6 +65,8 @@ public class BookUtil {
             bookInCartDto.setPrice(cartItem.getBook().getPrice() + "");
             bookInCartDto.setDiscounted_price(cartItem.getBook().getDiscounted_price() + "");
             bookInCartDto.setQuantity(cartItem.getQuantity());
+            bookInCartDto.setQuantityBook(cartItem.getBook().getQuantity());
+            bookInCartDto.setQuantitySold(cartItem.getBook().getQuantitySold());
             bookInCartDto.setProduct_id(cartItem.getBook().getId());
             bookInCartDto.setAdded_on(cartItem.getAddOn());
             bookInCartDto.setSub_total(cartItem.getBook().getDiscounted_price().multiply(new BigDecimal(cartItem.getQuantity())) + "");

@@ -14,6 +14,8 @@ public class BookInCartDto {
     private String name;
     private String price;
     private int quantity;
+    private int quantityBook;
+    private int quantitySold;
     private int product_id;
     private String sub_total;
     private LocalDateTime added_on;

@@ -26,7 +26,11 @@ public class CustomerService implements UserDetailsService {
     }
 
     public List<Customer> getAll() {
-        return customerRepo.findAll();
+        List<Customer> customers=new ArrayList<>();
+        for(Customer customer:customerRepo.findAll())
+            if(!customer.getRole().equals("admin"))
+                customers.add(customer);
+        return customers;
     }
 
     public boolean isEmailExists(String email) {

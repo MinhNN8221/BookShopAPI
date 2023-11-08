@@ -24,6 +24,8 @@ public class Receiver {
     private String address;
     @Column(name = "is_default")
     private int isDefault;
+    @Column(name = "is_selected")
+    private int isSelected;
     @ManyToOne
     @JoinColumn(name = "customerId")
     private Customer customer;

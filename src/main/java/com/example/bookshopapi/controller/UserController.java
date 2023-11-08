@@ -66,13 +66,28 @@ public class UserController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getUserNumber() {
-        return ResponseEntity.ok(new Message("Số lượng khách hàng sử dụng dịch vụ: " + customerService.getAll().size()));
+        return ResponseEntity.ok(customerService.getAll());
+//        return ResponseEntity.ok(new Message("Số lượng khách hàng sử dụng dịch vụ: " + customerService.getAll().size()));
+    }
+
+    @PutMapping("update/status")
+    public ResponseEntity<?> updateStatus(@RequestParam("idUser") int idUser, @RequestParam("status") String status) {
+        Customer customer = customerService.findById(idUser);
+        if (customer == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "USR_04", "Không tìm thấy tài khoản", ""));
+        } else {
+            customer.setStatus(status);
+            customerService.save(customer);
+            if (status.equals("inactive")) {
+                return ResponseEntity.ok(new Message("Đã khóa tài khoản khách hàng!"));
+            } else {
+                return ResponseEntity.ok(new Message("Đã mở khóa tài khoản khách hàng!"));
+            }
+        }
     }
 
     @PostMapping("")
-    public ResponseEntity<?> register(@RequestParam("email") String email,
-                                      @RequestParam("name") String name,
-                                      @RequestParam("password") String password) {
+    public ResponseEntity<?> register(@RequestParam("email") String email, @RequestParam("name") String name, @RequestParam("password") String password) {
         if (customerService.isEmailExists(email)) {
             Map<String, Object> response = new HashMap<>();
             Error error = new Error(409, "USR_04", "Email này đã tồn tại trong hệ thống!", "email");
@@ -85,8 +100,9 @@ public class UserController {
             customer.setEmail(email);
             customer.setName(name);
             customer.setPassword(bCryptPasswordEncoder.encode(password));
-            customer.setAvatar("");
+//            customer.setAvatar("");
             customer.setRole("user");
+            customer.setStatus("active");
             String accessToken = jwtUtil.generateToken(customer);
             customerService.save(customer);
             wishList.setCustomer(customer);
@@ -100,8 +116,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam("email") String email,
-                                   @RequestParam("password") String password) {
+    public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password) {
         Customer customer = customerService.findByEmail(email);
         if (customer == null) {
             Map<String, Object> response = new HashMap<>();
@@ -110,8 +125,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } else {
             try {
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(email, password));
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
                 String accessToken = jwtUtil.generateToken(customer);
                 LocalDateTime expiredTime = jwtUtil.extractExpiration(accessToken);
                 long expiresIn = ChronoUnit.HOURS.between(LocalDateTime.now().with(ChronoField.MILLI_OF_SECOND, 0), expiredTime);
@@ -127,8 +141,7 @@ public class UserController {
     }
 
     @PostMapping("/update/avatar")
-    public ResponseEntity<?> uploadFile(@RequestHeader("user-key") String userKey,
-                                        @RequestParam("image") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<?> uploadFile(@RequestHeader("user-key") String userKey, @RequestParam("image") MultipartFile multipartFile) throws IOException {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             String imageURL = customerService.uploadFile(multipartFile, "customer");
             int id = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer", "")));
@@ -170,9 +183,7 @@ public class UserController {
     }
 
     @PostMapping("/changePass")
-    public ResponseEntity<?> changePass(@RequestParam("email") String email,
-                                        @RequestParam("old_password") String old_password,
-                                        @RequestParam("new_password") String new_password) {
+    public ResponseEntity<?> changePass(@RequestParam("email") String email, @RequestParam("old_password") String old_password, @RequestParam("new_password") String new_password) {
         Customer customer = customerService.findByEmail(email);
 //        if (!customer.getPassword().equals(old_password)) {
         if (!bCryptPasswordEncoder.matches(old_password, customer.getPassword())) {
@@ -198,12 +209,7 @@ public class UserController {
     }
 
     @PutMapping("")
-    public ResponseEntity<?> updateCustomer(@RequestHeader("user-key") String userKey,
-                                            @RequestParam String name,
-                                            @RequestParam String address,
-                                            @RequestParam String date_of_birth,
-                                            @RequestParam String gender,
-                                            @RequestParam String mob_phone) {
+    public ResponseEntity<?> updateCustomer(@RequestHeader("user-key") String userKey, @RequestParam String name, @RequestParam String address, @RequestParam String date_of_birth, @RequestParam String gender, @RequestParam String mob_phone) {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             int id = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
             Customer customer = customerService.getCustomer(id);

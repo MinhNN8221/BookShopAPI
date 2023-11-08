@@ -42,6 +42,8 @@ public class Customer {
     private String gender;
     @Column(name = "avatar")
     private String avatar;
+    @Column(name = "status")
+    private String status;
     @Column(name = "role")
     private String role;
     @OneToMany(mappedBy = "customer")

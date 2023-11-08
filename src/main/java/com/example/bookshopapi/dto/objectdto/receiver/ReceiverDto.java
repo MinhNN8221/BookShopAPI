@@ -13,5 +13,6 @@ public class ReceiverDto {
     private String receiver_phone;
     private String receiver_address;
     private int isDefault;
+    private int isSelected;
     private int customer_id;
 }

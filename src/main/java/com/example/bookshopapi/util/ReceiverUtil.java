@@ -15,6 +15,7 @@ public class ReceiverUtil {
             receiverDto.setReceiver_name(receiver.getReceiverName());
             receiverDto.setReceiver_phone(receiver.getReceiverPhone());
             receiverDto.setReceiver_address(receiver.getAddress());
+            receiverDto.setIsSelected(receiver.getIsSelected());
             receiverDto.setIsDefault(receiver.getIsDefault());
             receiverDto.setCustomer_id(customerId);
             lists.add(receiverDto);
@@ -29,6 +30,7 @@ public class ReceiverUtil {
         receiverDto.setReceiver_phone(receiver.getReceiverPhone());
         receiverDto.setReceiver_address(receiver.getAddress());
         receiverDto.setIsDefault(receiver.getIsDefault());
+        receiverDto.setIsSelected(receiver.getIsSelected());
         receiverDto.setCustomer_id(receiver.getCustomer().getId());
         return receiverDto;
     }

@@ -49,7 +49,8 @@ public class ReceiverController {
     public ResponseEntity<?> addReceiver(@RequestHeader("user-key") String userKey,
                                          @RequestParam("receiver_name") String receiverName,
                                          @RequestParam("receiver_phone") String receiverPhone,
-                                         @RequestParam("receiver_address") String receiverAddress) {
+                                         @RequestParam("receiver_address") String receiverAddress,
+                                         @RequestParam("isDefault") int isDefalut) {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             int customerId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
             Customer customer = customerService.getCustomer(customerId);
@@ -60,7 +61,7 @@ public class ReceiverController {
             receiver.setReceiverPhone(receiverPhone);
             receiver.setAddress(receiverAddress);
             if (receivers.size() > 0) {
-                receiver.setIsDefault(0);
+                receiver.setIsDefault(isDefalut);
             } else {
                 receiver.setIsDefault(1);
             }
@@ -98,18 +99,45 @@ public class ReceiverController {
                                             @RequestParam("receiver_name") String receiverName,
                                             @RequestParam("receiver_phone") String receiverPhone,
                                             @RequestParam("receiver_address") String receiverAddress,
-                                            @RequestParam("isDefault") int isDefault) {
+                                            @RequestParam("isDefault") int isDefault,
+                                            @RequestParam("isSelected") int isSelected) {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             Receiver receiver = receiverService.findById(receiverId);
-            receiver.setReceiverName(receiverName);
-            receiver.setReceiverPhone(receiverPhone);
-            receiver.setAddress(receiverAddress);
-            receiver.setIsDefault(isDefault);
-            if (new PhoneNumberValidator().isValidPhoneNumber(receiverPhone)) {
+            if (receiver == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "RECE_02", "Không tìm thấy địa chỉ người nhận!", ""));
+            } else {
+                receiver.setReceiverName(receiverName);
+                receiver.setReceiverPhone(receiverPhone);
+                receiver.setAddress(receiverAddress);
+                receiver.setIsDefault(isDefault);
+                receiver.setIsSelected(isSelected);
+                if (new PhoneNumberValidator().isValidPhoneNumber(receiverPhone)) {
+                    receiverService.update(receiver);
+                    return ResponseEntity.ok(new Message("Cập nhật thông tin nhận hàng thành công!"));
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error(400, "PHONE_01", "Số điện thoại không đúng định dạng", "receiver_phone"));
+                }
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(401, "AUT_02", "Userkey không hợp lệ hoặc đã hết hạn!", "USER_KEY"));
+        }
+    }
+
+    @PutMapping("x")
+    public String update(){
+        return "dsfds";
+    }
+    @PutMapping("defaultIsSelected")
+    public ResponseEntity<?> updateReceiverDefalutIsSelected(@RequestHeader("user-key") String userKey) {
+        if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
+            int idCustomer = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
+            Receiver receiver = receiverService.getReceiverDefault(idCustomer);
+            if (receiver == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "RECE_02", "Không tìm thấy địa chỉ người nhận!", ""));
+            } else {
+                receiver.setIsSelected(1);
                 receiverService.update(receiver);
                 return ResponseEntity.ok(new Message("Cập nhật thông tin nhận hàng thành công!"));
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error(400, "PHONE_01", "Số điện thoại không đúng định dạng", "receiver_phone"));
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(401, "AUT_02", "Userkey không hợp lệ hoặc đã hết hạn!", "USER_KEY"));
@@ -135,8 +163,24 @@ public class ReceiverController {
     @GetMapping("/default")
     public ResponseEntity<?> getReceiverDefault(@RequestHeader("user-key") String userKey) {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
-            int customerId=Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
+            int customerId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
             Receiver receiver = receiverService.getReceiverDefault(customerId);
+            if (receiver == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "REC_02", "Không tìm thấy thông tin người nhận", "receiver_id"));
+            } else {
+                ReceiverDto response = new ReceiverUtil().addToReceiverDto(receiver);
+                return ResponseEntity.ok(response);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(401, "AUT_02", "Userkey không hợp lệ hoặc đã hết hạn!", "USER_KEY"));
+        }
+    }
+
+    @GetMapping("/selected")
+    public ResponseEntity<?> getReceiverSelected(@RequestHeader("user-key") String userKey) {
+        if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
+            int customerId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
+            Receiver receiver = receiverService.getReceiverSelected(customerId);
             if (receiver == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "REC_02", "Không tìm thấy thông tin người nhận", "receiver_id"));
             } else {

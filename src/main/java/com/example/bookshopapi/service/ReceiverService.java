@@ -13,7 +13,7 @@ public class ReceiverService {
     private ReceiverRepo receiverRepo;
 
     public List<Receiver> getAllReceivers(int customerId) {
-        return receiverRepo.findByCustomerId(customerId);
+        return receiverRepo.findByCustomerIdOrderByIsDefaultDesc(customerId);
     }
 
     public Receiver findById(int receiverId) {
@@ -24,15 +24,26 @@ public class ReceiverService {
         return receiverRepo.getReceiverDefault(customerId);
     }
 
+    public Receiver getReceiverSelected(int customerId) {
+        return receiverRepo.getReceiverSelected(customerId);
+    }
+
     public Receiver save(Receiver receiver) {
+        Receiver receiverIsDefault = getReceiverDefault(receiver.getCustomer().getId());
+        if (receiverIsDefault != null && receiver.getIsDefault() == 1)
+            receiverIsDefault.setIsDefault(0);
         return receiverRepo.save(receiver);
     }
 
     public void update(Receiver receiver) {
-        Receiver receiverIsDefalut = getReceiverDefault(receiver.getCustomer().getId());
-        if (receiverIsDefalut != null && !receiverIsDefalut.equals(receiver)) {
-            receiverIsDefalut.setIsDefault(0);
-            receiverRepo.save(receiverIsDefalut);
+        Receiver receiverIsDefault = getReceiverDefault(receiver.getCustomer().getId());
+        if (receiverIsDefault != null && !receiverIsDefault.equals(receiver) && receiver.getIsDefault() == 1) {
+            receiverIsDefault.setIsDefault(0);
+//            receiverRepo.save(receiverIsDefault);
+        }
+        Receiver receiverIsSelected = getReceiverSelected(receiver.getCustomer().getId());
+        if (receiverIsSelected != null && !receiverIsSelected.equals(receiver) && receiver.getIsSelected() == 1) {
+            receiverIsSelected.setIsSelected(0);
         }
         receiverRepo.save(receiver);
     }

@@ -90,10 +90,31 @@ public class EmailService {
         String text = "<strong>Xin chào, <em>" + customer.getName() + "</em></strong>" +
                 "<p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu BookShop của bạn.</p>" +
                 "<p>Mật khẩu mới của bạn là: <strong>" + newPass + "</strong></p>" +
-                "<p>Trân trọng,</p" +
+                "<p>Trân trọng,</p>" +
                 "<p>Đội ngũ BookShop.</p>";
         sendEmail(email, subject, text);
         customer.setPassword(bCryptPasswordEncoder.encode(newPass));
+        customerService.save(customer);
+    }
+
+    public void sendMailLockUser(Customer customer) throws MessagingException, UnsupportedEncodingException {
+        String subject = "Thông báo từ hệ thống BookShop";
+        String text = "<strong>Xin chào, <em>" + customer.getName() + "</em></strong>" +
+                "<p>Chúng tôi lấy làm tiếc khi phải thông báo điều này tới bạn:</p>" +
+                "<p>Do bạn đã vi phạm chính sách của chúng tôi, vì thế chúng tôi sẽ tạm khóa tài khoản của bạn.</p>" +
+                "<p>Trân trọng,</p>" +
+                "<p>Đội ngũ BookShop.</p>";
+        sendEmail(customer.getEmail(), subject, text);
+        customerService.save(customer);
+    }
+
+    public void sendMailUnLockUser(Customer customer) throws MessagingException, UnsupportedEncodingException {
+        String subject = "Thông báo từ hệ thống BookShop";
+        String text = "<strong>Xin chào, <em>" + customer.getName() + "</em></strong>" +
+                "<p>Tài khoản BookShop của bạn đã được mở khóa. Bạn có thể vào hệ thống để mua sắm</p>" +
+                "<p>Trân trọng,</p>" +
+                "<p>Đội ngũ BookShop.</p>";
+        sendEmail(customer.getEmail(), subject, text);
         customerService.save(customer);
     }
 }

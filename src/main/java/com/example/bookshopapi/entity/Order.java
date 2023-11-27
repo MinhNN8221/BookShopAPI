@@ -33,6 +33,8 @@ public class Order {
     private String receiverName;
     @Column(name = "receiver_phone", columnDefinition = "VARCHAR(10)")
     private String receiverPhone;
+    @Column(name = "isRating")
+    private int isRating;
     @ManyToOne
     @JoinColumn(name = "customerId")
     private Customer customer;

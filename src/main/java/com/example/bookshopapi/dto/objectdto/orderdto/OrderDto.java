@@ -25,4 +25,5 @@ public class OrderDto {
     private String shipping_cost;
     private String order_status;
     private String order_total;
+    private int isRating;
 }

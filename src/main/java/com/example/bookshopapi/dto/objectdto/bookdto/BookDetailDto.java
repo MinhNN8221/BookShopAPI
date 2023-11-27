@@ -15,6 +15,7 @@ public class BookDetailDto {
     private String discounted_price;
     private int quantity;
     private int quantitySold;
+    private double ratingLevel;
     private String thumbnail;
     private int wishlist;
 }

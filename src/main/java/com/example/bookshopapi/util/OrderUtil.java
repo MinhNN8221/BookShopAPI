@@ -26,7 +26,9 @@ public class OrderUtil {
             }
             orderDto.setTotal_quantity(totalQuantity + "");
             orderDto.setCreated_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getCreateOn()));
-            orderDto.setShipped_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getShippedOn()));
+            if(order.getShippedOn()!=null){
+                orderDto.setShipped_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getShippedOn()));
+            }
             orderDto.setCustomer_id(customerId);
             orderDto.setAddress(order.getAddress());
             orderDto.setReceiver_name(order.getReceiverName());
@@ -35,6 +37,7 @@ public class OrderUtil {
             orderDto.setShipping_type(order.getShipping().getShippingType());
             orderDto.setShipping_cost(order.getShipping().getShippingCost() + "");
             orderDto.setOrder_status(order.getOrderStatus().getStatus());
+            orderDto.setIsRating(order.getIsRating());
             orderDto.setOrder_total(order.getTotalAmount().add(order.getShipping().getShippingCost()) + "");
             orderDtos.add(orderDto);
         }
@@ -47,7 +50,9 @@ public class OrderUtil {
         response.setMerchandise_subtotal(order.getTotalAmount() + "");
         response.setCreated_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getCreateOn()));
         response.setCustomer_id(customerId);
-        response.setShipped_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getShippedOn()));
+        if (order.getShippedOn() != null) {
+            response.setShipped_on(new ConvetDateTimeUTC().convertDateTimeUTC(order.getShippedOn()));
+        }
         response.setAddress(order.getAddress());
         response.setReceiver_name(order.getReceiverName());
         response.setReceiver_phone(order.getReceiverPhone());
@@ -55,6 +60,7 @@ public class OrderUtil {
         response.setShipping_type(order.getShipping().getShippingType());
         response.setShipping_cost(order.getShipping().getShippingCost() + "");
         response.setOrder_status(order.getOrderStatus().getStatus());
+        response.setPayment_method(order.getPayment().getPaymentMethod());
         response.setOrder_total(order.getTotalAmount().add(order.getShipping().getShippingCost()) + "");
         List<BookOrderDetailDto> bookOrderDetailDtos = new ArrayList<>();
         for (OrderDetail orderDetail : orderDetails) {
@@ -68,7 +74,7 @@ public class OrderUtil {
             bookOrderDetailDto.setUnit_cost(orderDetail.getUniCost() + "");
             bookOrderDetailDto.setSubtotal(orderDetail.getUniCost().multiply(new BigDecimal(orderDetail.getQuantity())) + "");
             int wishList = 0;
-            if(books!=null){
+            if (books != null) {
                 for (Book book : books) {
                     if (orderDetail.getBook().getId() == book.getId()) {
                         wishList = 1;

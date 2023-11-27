@@ -5,15 +5,21 @@ import com.example.bookshopapi.dto.objectdto.authordto.AuthorDto;
 import com.example.bookshopapi.dto.objectdto.bookdto.*;
 import com.example.bookshopapi.dto.objectdto.supplierdto.SupplierDto;
 import com.example.bookshopapi.dto.request.BookRequest;
+import com.example.bookshopapi.dto.request.RatingRequest;
 import com.example.bookshopapi.dto.response.Error;
 import com.example.bookshopapi.dto.response.Message;
 import com.example.bookshopapi.dto.response.book.*;
+import com.example.bookshopapi.dto.response.rating.RatingResponse;
 import com.example.bookshopapi.entity.Book;
+import com.example.bookshopapi.entity.Rating;
+import com.example.bookshopapi.repository.RatingRepo;
 import com.example.bookshopapi.service.CustomerService;
 import com.example.bookshopapi.service.ProductService;
+import com.example.bookshopapi.service.RatingService;
 import com.example.bookshopapi.service.WishListItemService;
 import com.example.bookshopapi.util.BookUtil;
 import com.example.bookshopapi.util.MultilPartFile;
+import com.example.bookshopapi.util.RatingUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +49,8 @@ public class ProductController {
     private JwtUtil jwtUtil;
     @Autowired
     private WishListItemService wishListItemService;
+    @Autowired
+    private RatingService ratingService;
 
     @GetMapping("/hello")
     public String hello(@RequestParam("name") String name, @RequestParam(required = false, defaultValue = "") String email) {
@@ -112,7 +120,17 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> getSearchProduct(@RequestParam("limit") int limit, @RequestParam("page") int page, @RequestParam("description_length") int descriptionLength, @RequestParam("query_string") String queryString, @RequestParam("filter_type") int filterType, @RequestParam("price_sort_order") String priceSortOrder) {
+//    public ResponseEntity<?> getSearchProduct(@RequestParam("limit") int limit, @RequestParam("page") int page,
+//                                              @RequestParam("description_length") int descriptionLength,
+//                                              @RequestParam("query_string") String queryString,
+//                                              @RequestParam("filter_type") int filterType,
+//                                              @RequestParam("price_sort_order") String priceSortOrder) {
+    public ResponseEntity<?> getSearchProduct(@RequestParam(name = "limit", defaultValue = "10") int limit,
+                                              @RequestParam(name = "page", defaultValue = "1") int page,
+                                              @RequestParam(name = "description_length", defaultValue = "100") int descriptionLength,
+                                              @RequestParam(name = "query_string", defaultValue = "") String queryString,
+                                              @RequestParam(name = "filter_type", defaultValue = "1") int filterType,
+                                              @RequestParam(name = "price_sort_order", defaultValue = "asc") String priceSortOrder) {
         Page<Book> books;
         List<BookDto> bookDtos = new ArrayList<>();
 
@@ -158,8 +176,9 @@ public class ProductController {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             int customerId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
             List<Book> booksInWishlist = wishListItemService.getAllBooksInWishlist(customerId);
+            double ratingLevel = ratingService.ratingLevel(productId);
             Book book = productService.findById(productId);
-            BookDetailDto bookDetailDto = new BookUtil().addBookDetailDto(book, booksInWishlist);
+            BookDetailDto bookDetailDto = new BookUtil().addBookDetailDto(book, booksInWishlist, ratingLevel);
             SupplierDto supplierDto = new SupplierDto(book.getSupplier().getId(), book.getSupplier().getName());
             AuthorDto authorDto = new AuthorDto(book.getAuthor().getId(), book.getAuthor().getName());
             BookDetailResponse response = new BookDetailResponse(bookDetailDto, supplierDto, authorDto);
@@ -235,5 +254,34 @@ public class ProductController {
         List<BookDto> bookDtos = new BookUtil().addBook(products);
         BookResponse response = new BookResponse(products.size(), bookDtos);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/rating")
+    public ResponseEntity<?> getRatingByBook(@RequestParam("bookId") int bookId,
+                                             @RequestParam("limit") int limit,
+                                             @RequestParam("page") int page) {
+        Page<Rating> ratings = ratingService.getAllByBookId(bookId, limit, page);
+        RatingResponse ratingResponse = new RatingResponse(ratings.getContent().size(), new RatingUtil().addToRatingDto(ratings.getContent()));
+        return ResponseEntity.ok(ratingResponse);
+    }
+
+    @PostMapping("/rating")
+    public ResponseEntity<?> createRatingOrder(@RequestBody List<RatingRequest> ratingRequests) {
+        ratingService.createRating(ratingRequests);
+        return ResponseEntity.ok(new Message("Đánh giá sản phẩm thành công!"));
+    }
+
+    @GetMapping("/rating_by_user")
+    public ResponseEntity<?> getAllRatingByUser(@RequestHeader("user-key") String userKey,
+                                                @RequestParam int limit,
+                                                @RequestParam int page) {
+        if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
+            int userId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
+            Page<Rating> ratings = ratingService.getAllByBookId(userId, limit, page);
+            RatingResponse ratingResponse = new RatingResponse(ratings.getContent().size(), new RatingUtil().addToRatingDto(ratings.getContent()));
+            return ResponseEntity.ok(ratingResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(401, "AUT_02", "Userkey không hợp lệ hoặc đã hết hạn!", "USER_KEY"));
+        }
     }
 }

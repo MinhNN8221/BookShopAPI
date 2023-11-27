@@ -28,7 +28,7 @@ public interface ProductRepo extends JpaRepository<Book, Integer> {
 
     List<Book> findTop20ByOrderByIdDesc();
 
-    List<Book> findTop20ByOrderByQuantityAsc();
+    List<Book> findTop20ByOrderByQuantitySoldDesc();
 
     List<Book> findTop5ByBannerIsNotNullOrderByIdDesc();
 

@@ -71,16 +71,17 @@ public class UserController {
     }
 
     @PutMapping("update/status")
-    public ResponseEntity<?> updateStatus(@RequestParam("idUser") int idUser, @RequestParam("status") String status) {
+    public ResponseEntity<?> updateStatus(@RequestParam("idUser") int idUser, @RequestParam("status") String status) throws MessagingException, UnsupportedEncodingException {
         Customer customer = customerService.findById(idUser);
         if (customer == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "USR_04", "Không tìm thấy tài khoản", ""));
         } else {
             customer.setStatus(status);
-            customerService.save(customer);
             if (status.equals("inactive")) {
+                emailService.sendMailLockUser(customer);
                 return ResponseEntity.ok(new Message("Đã khóa tài khoản khách hàng!"));
             } else {
+                emailService.sendMailUnLockUser(customer);
                 return ResponseEntity.ok(new Message("Đã mở khóa tài khoản khách hàng!"));
             }
         }
@@ -186,15 +187,19 @@ public class UserController {
     public ResponseEntity<?> changePass(@RequestParam("email") String email, @RequestParam("old_password") String old_password, @RequestParam("new_password") String new_password) {
         Customer customer = customerService.findByEmail(email);
 //        if (!customer.getPassword().equals(old_password)) {
-        if (!bCryptPasswordEncoder.matches(old_password, customer.getPassword())) {
-            Map<String, Object> response = new HashMap<>();
-            Error error = new Error(400, "USR_01", "Mật khẩu cũ không chính xác!", "password");
-            response.put("error", error);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        if (customer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Error(404, "USR_04", "Không tìm thấy tài khoản của bạn", "email"));
         } else {
-            customer.setPassword(bCryptPasswordEncoder.encode(new_password));
-            customerService.save(customer);
-            return ResponseEntity.ok(customer);
+            if (!bCryptPasswordEncoder.matches(old_password, customer.getPassword())) {
+                Map<String, Object> response = new HashMap<>();
+                Error error = new Error(400, "USR_01", "Mật khẩu cũ không chính xác!", "password");
+                response.put("error", error);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            } else {
+                customer.setPassword(bCryptPasswordEncoder.encode(new_password));
+                customerService.save(customer);
+                return ResponseEntity.ok(customer);
+            }
         }
     }
 

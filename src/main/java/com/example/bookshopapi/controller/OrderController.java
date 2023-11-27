@@ -49,6 +49,8 @@ public class OrderController {
     @Autowired
     private OrderDetailService orderDetailService;
     @Autowired
+    private ProductService productService;
+    @Autowired
     private PaymentService paymentService;
     @Autowired
     private JwtUtil jwtUtil;
@@ -99,6 +101,7 @@ public class OrderController {
                     order.setTotalAmount(subTotal);
                     order.setOrderStatus(orderStatus);
                     order.setCustomer(customer);
+                    order.setIsRating(0);
                     order.setPayment(paymentService.getPaymentById(paymentId));
                     emailService.sendMailOrder(receiver, customer, order, cartItems);
                     orderService.save(order);
@@ -154,6 +157,14 @@ public class OrderController {
                                                @RequestParam("orderStatusId") int orderStatusId) {
         Order order = orderService.getOrderById(orderId);
         OrderStatus orderStatus = orderStatusService.findById(orderStatusId);
+        if(orderStatusId==4){
+            List<OrderDetail> orderDetails=orderDetailService.getAllByOrderId(orderId);
+            for(OrderDetail orderDetail:orderDetails){
+                Book book=productService.findById(orderDetail.getBook().getId());
+                book.setQuantitySold(book.getQuantitySold()-orderDetail.getQuantity());
+                productService.addBook(book);
+            }
+        }
         order.setOrderStatus(orderStatus);
         order.setShippedOn(new Date());
         orderService.save(order);

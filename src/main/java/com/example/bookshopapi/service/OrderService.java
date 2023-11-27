@@ -24,7 +24,7 @@ public class OrderService {
     }
 
     public List<Order> getAllByCustomerId(int customerId) {
-        return orderRepo.getAllByCustomerId(customerId);
+        return orderRepo.getAllByCustomerIdOrderByCreateOnDesc(customerId);
     }
 
     public Order getOrderById(int orderId) {

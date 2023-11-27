@@ -83,7 +83,7 @@ public class BookUtil {
         return bookList;
     }
 
-    public BookDetailDto addBookDetailDto(Book book, List<Book> booksInWishlist) {
+    public BookDetailDto addBookDetailDto(Book book, List<Book> booksInWishlist, double ratingLevel) {
         BookDetailDto bookDetailDto = new BookDetailDto();
         bookDetailDto.setProduct_id(book.getId());
         bookDetailDto.setName(book.getName());
@@ -93,6 +93,7 @@ public class BookUtil {
         bookDetailDto.setQuantity(book.getQuantity());
         bookDetailDto.setQuantitySold(book.getQuantitySold());
         bookDetailDto.setThumbnail(book.getThumbnail());
+        bookDetailDto.setRatingLevel(ratingLevel);
         int wishlist = 0;
         if (booksInWishlist != null) {
             for (Book bookWishlist : booksInWishlist) {

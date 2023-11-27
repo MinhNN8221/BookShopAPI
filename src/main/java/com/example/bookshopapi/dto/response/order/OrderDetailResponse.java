@@ -24,6 +24,7 @@ public class OrderDetailResponse {
     private int shipping_id;
     private String shipping_type;
     private String shipping_cost;
+    private String payment_method;
     private String order_status;
     private String order_total;
     List<BookOrderDetailDto> products;

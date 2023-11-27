@@ -45,7 +45,7 @@ public class ProductService {
     }
 
     public List<Book> getProductsHot() {
-        return productRepo.findTop20ByOrderByQuantityAsc();
+        return productRepo.findTop20ByOrderByQuantitySoldDesc();
     }
 
     public List<Book> getProductsBanner() {

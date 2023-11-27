@@ -60,6 +60,9 @@ public class Book {
 //    private int display;
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @JsonIgnore
+    private List<Rating> ratings;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<OrderDetail> orderDetails;
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @JsonIgnore

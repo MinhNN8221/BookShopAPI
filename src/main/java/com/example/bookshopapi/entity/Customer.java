@@ -22,7 +22,7 @@ public class Customer {
     @Column(name = "id")
     private Integer id;
     @NotNull
-    @Column(name = "name", columnDefinition = "VARCHAR(100)")
+    @Column(name = "name", columnDefinition = "VARCHAR(255)")
     private String name;
     @NotNull
     @Column(name = "email", columnDefinition = "VARCHAR(255)")
@@ -33,9 +33,9 @@ public class Customer {
     private String password;
     @Column(name = "address", columnDefinition = "VARCHAR(100)")
     private String address;
-    @Column(name = "mob_phone", columnDefinition = "VARCHAR(10)")
+    @Column(name = "mob_phone", columnDefinition = "VARCHAR(12)")
     private String mobPhone;
-    @Column(name = "date_of_birth", columnDefinition = "VARCHAR(100)")
+    @Column(name = "date_of_birth", columnDefinition = "VARCHAR(30)")
 //    @Temporal(TemporalType.DATE) // Xác định kiểu thời gian
     private LocalDate dateOfBirth;
     @Column(name = "gender", columnDefinition = "VARCHAR(10)")
@@ -44,7 +44,7 @@ public class Customer {
     private String avatar;
     @Column(name = "status")
     private String status;
-    @Column(name = "role")
+    @Column(name = "role",columnDefinition = "VARCHAR(10)")
     private String role;
     @OneToMany(mappedBy = "customer")
     @JsonIgnore

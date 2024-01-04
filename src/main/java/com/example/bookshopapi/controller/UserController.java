@@ -3,14 +3,9 @@ package com.example.bookshopapi.controller;
 import com.example.bookshopapi.config.jwt.JwtUtil;
 import com.example.bookshopapi.dto.response.Message;
 import com.example.bookshopapi.dto.response.customer.CustomerResponse;
-import com.example.bookshopapi.entity.Cart;
-import com.example.bookshopapi.entity.Customer;
+import com.example.bookshopapi.entity.*;
 import com.example.bookshopapi.dto.response.Error;
-import com.example.bookshopapi.entity.WishList;
-import com.example.bookshopapi.service.CartService;
-import com.example.bookshopapi.service.CustomerService;
-import com.example.bookshopapi.service.EmailService;
-import com.example.bookshopapi.service.WishListService;
+import com.example.bookshopapi.service.*;
 import com.example.bookshopapi.util.CartUtil;
 import com.example.bookshopapi.util.PhoneNumberValidator;
 import lombok.AllArgsConstructor;
@@ -20,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -56,13 +50,8 @@ public class UserController {
     private JwtUtil jwtUtil;
     @Autowired
     private AuthenticationManager authenticationManager;
-
-    private PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
-    @GetMapping("/")
-    public String index() {
-        return "hello world!";
-    }
+    @Autowired
+    private PasswordEncoder bCryptPasswordEncoder;
 
     @GetMapping("/all")
     public ResponseEntity<?> getUserNumber() {
@@ -142,7 +131,7 @@ public class UserController {
     }
 
     @PostMapping("/update/avatar")
-    public ResponseEntity<?> uploadFile(@RequestHeader("user-key") String userKey, @RequestParam("image") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<?> changeAvatar(@RequestHeader("user-key") String userKey, @RequestParam("image") MultipartFile multipartFile) throws IOException {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             String imageURL = customerService.uploadFile(multipartFile, "customer");
             int id = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer", "")));

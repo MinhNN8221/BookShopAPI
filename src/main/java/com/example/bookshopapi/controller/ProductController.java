@@ -52,15 +52,6 @@ public class ProductController {
     @Autowired
     private RatingService ratingService;
 
-    @GetMapping("/hello")
-    public String hello(@RequestParam("name") String name, @RequestParam(required = false, defaultValue = "") String email) {
-        if (email != "") {
-            return "hellO " + name + " " + email;
-        } else {
-            return "hello " + name;
-        }
-    }
-
     @GetMapping("")
     public ResponseEntity<?> getAll(@RequestParam("page") int page, @RequestParam("limit") int limit, @RequestParam("description_length") int descriptionLength) {
         Page<Book> books = productService.getProducts(page, limit, descriptionLength);

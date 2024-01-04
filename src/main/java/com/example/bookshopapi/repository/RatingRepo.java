@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface RatingRepo extends JpaRepository<Rating, Integer> {
 
-    Page<Rating> getAllByBook_Id(int bookId, Pageable pageable);
+    Page<Rating> getAllByBook_IdOrderByCreateTimeDesc(int bookId, Pageable pageable);
     List<Rating> getAllByBook_Id(int bookId);
 
     Rating save(Rating rating);

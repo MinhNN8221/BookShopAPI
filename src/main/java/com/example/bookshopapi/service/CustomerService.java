@@ -5,6 +5,7 @@ import com.example.bookshopapi.entity.Customer;
 import com.example.bookshopapi.repository.CustomerRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +29,9 @@ public class CustomerService implements UserDetailsService {
     }
 
     public List<Customer> getAll() {
-        List<Customer> customers=new ArrayList<>();
-        for(Customer customer:customerRepo.findAll())
-            if(!customer.getRole().equals("admin"))
+        List<Customer> customers = new ArrayList<>();
+        for (Customer customer : customerRepo.findAll())
+            if (!customer.getRole().equals("admin"))
                 customers.add(customer);
         return customers;
     }
@@ -41,7 +44,7 @@ public class CustomerService implements UserDetailsService {
         return customerRepo.findByEmail(email);
     }
 
-    public Customer findById(int customerId){
+    public Customer findById(int customerId) {
         return customerRepo.findById(customerId);
     }
 
@@ -71,6 +74,15 @@ public class CustomerService implements UserDetailsService {
         if (customer == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new org.springframework.security.core.userdetails.User(customer.getName(), customer.getPassword(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(customer.getName(), customer.getPassword(), Collections.singletonList(new SimpleGrantedAuthority("ROLE_"+customer.getRole().toUpperCase())));
     }
+
+//    @Override
+//    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+//        Customer customer = customerRepo.findByEmail(s);
+//        if (customer == null) {
+//            throw new UsernameNotFoundException("User not found");
+//        }
+//        return new org.springframework.security.core.userdetails.User(customer.getName(), customer.getPassword(), new ArrayList<>());
+//    }
 }

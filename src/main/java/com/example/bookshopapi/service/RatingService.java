@@ -31,7 +31,7 @@ public class RatingService {
 
     public Page<Rating> getAllByBookId(int bookId, int limit, int page) {
         Pageable pageable = PageRequest.of(page - 1, limit);
-        return ratingRepo.getAllByBook_Id(bookId, pageable);
+        return ratingRepo.getAllByBook_IdOrderByCreateTimeDesc(bookId, pageable);
     }
 
     public Page<Rating> getAllRatingByUser(int userId, int limit, int page) {

@@ -123,10 +123,6 @@ public class ReceiverController {
         }
     }
 
-    @PutMapping("x")
-    public String update(){
-        return "dsfds";
-    }
     @PutMapping("defaultIsSelected")
     public ResponseEntity<?> updateReceiverDefalutIsSelected(@RequestHeader("user-key") String userKey) {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {

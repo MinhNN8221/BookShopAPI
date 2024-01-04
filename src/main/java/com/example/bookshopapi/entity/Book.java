@@ -37,9 +37,9 @@ public class Book {
     private int quantity;
     @Column(name = "quantity_sold")
     private int quantitySold;
-    @Column(name = "image", columnDefinition = "VARCHAR(300)")
+    @Column(name = "image", columnDefinition = "VARCHAR(255)")
     private String image;
-    @Column(name = "thumbnail", columnDefinition = "VARCHAR(300)")
+    @Column(name = "thumbnail", columnDefinition = "VARCHAR(255)")
     private String thumbnail;
     @ManyToOne
     @JoinColumn(name = "author_id")

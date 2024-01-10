@@ -70,10 +70,6 @@ public class EmailService {
                     "<td width='100' height='175' style='text-align: center;'>" + cartItem.getQuantity() + "</td>" +
                     "</tr>";
         }
-//        text += "<tr>" +
-//                "<td height='45' colspan='5' style='font-weight: bold;'>Tổng tiền: " + formatter.format(subTotal) + "</td>" +
-//                "</tr>" +
-//                "</table>";
         text += "</table>" +
                 "<span style='font-weight: bold;'>Tổng tiền: " + formatter.format(subTotal) + "</span><br>" +
                 "<span style='font-weight: bold;'>Phí vận chuyển: " + formatter.format(order.getShipping().getShippingCost()) + "</span><br>" +

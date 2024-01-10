@@ -59,7 +59,7 @@ public class CartController {
                 cartItemExisted.setQuantity(cartItemExisted.getQuantity() + 1);
                 cartItemService.save(cartItemExisted);
             }
-            book.setQuantitySold(book.getQuantitySold()+1);
+            book.setQuantitySold(book.getQuantitySold() + 1);
             productService.addBook(book);
             List<CartItem> cartItems = cartItemService.getAllByCustomerId(customerId);
             List<CartItemDto> cartItemDtos = new CartUtil().addToCartItemDto(cartItems);
@@ -79,8 +79,8 @@ public class CartController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "CART_01", "Sản phẩm này không trong giỏ hàng của bạn!", "ITEM_ID"));
             } else {
                 cartItemService.deleteByCartItemId(itemId, customerId);
-                Book book=cartItemExisted.getBook();
-                book.setQuantitySold(book.getQuantitySold()-1);
+                Book book = cartItemExisted.getBook();
+                book.setQuantitySold(book.getQuantitySold() - 1);
                 productService.addBook(book);
                 return ResponseEntity.ok(new Message("Đã xóa item khỏi giỏ hàng của bạn!"));
             }
@@ -93,8 +93,8 @@ public class CartController {
     public ResponseEntity<?> emptyCart(@RequestHeader("user-key") String userKey) {
         if (jwtUtil.isTokenExpired(userKey.replace("Bearer ", ""))) {
             int customerId = Integer.parseInt(jwtUtil.extractId(userKey.replace("Bearer ", "")));
-            Cart cart=cartService.findByCustomerId(customerId);
-            List<CartItem> cartItems=cartItemService.getAllByCustomerId(customerId);
+            Cart cart = cartService.findByCustomerId(customerId);
+            List<CartItem> cartItems = cartItemService.getAllByCustomerId(customerId);
             cartItemService.restoreQuantity(cartItems);
             cartItemService.emptyCart(cart.getId());
             return ResponseEntity.ok(new Message("Đã làm trống giỏ hàng của bạn"));
@@ -113,10 +113,10 @@ public class CartController {
             if (cartItem == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "CART_01", "Sản phẩm này không trong giỏ hàng của bạn!", "ITEM_ID"));
             } else {
-                int quantityBookBefore=cartItem.getQuantity();
+                int quantityBookBefore = cartItem.getQuantity();
                 cartItem.setQuantity(quantity);
-                Book book=cartItem.getBook();
-                book.setQuantitySold(book.getQuantitySold()+(quantity-quantityBookBefore));
+                Book book = cartItem.getBook();
+                book.setQuantitySold(book.getQuantitySold() + (quantity - quantityBookBefore));
                 productService.addBook(book);
                 cartItemService.save(cartItem);
                 return ResponseEntity.ok(new Message("Đã thay đổi số lượng"));
@@ -134,14 +134,14 @@ public class CartController {
             if (booksInWishlist.size() == 0) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(404, "CARD_01", "Không có sản phẩm nào trong wishlist để thêm", ""));
             } else {
-                int dem=0;
+                int dem = 0;
                 for (Book book : booksInWishlist) {
-                    if(book.getQuantity()-book.getQuantitySold()==0)
+                    if (book.getQuantity() - book.getQuantitySold() == 0)
                         dem++;
                 }
-                if(dem==booksInWishlist.size()){
+                if (dem == booksInWishlist.size()) {
                     return ResponseEntity.ok(new Message("Tất cả sản phẩm trong danh sách yêu thích tạm hết!"));
-                }else {
+                } else {
                     cartItemService.addWishlistToCart(customerId, booksInWishlist);
                     return ResponseEntity.ok(new Message("Đã thêm toàn bộ sản phẩm vào giỏ hàng!"));
                 }
